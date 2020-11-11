@@ -1,4 +1,5 @@
-# matataki-auth-fe
+<h1 align="center">MatatakiAuth-FE</h1>
+
 
 ## Project setup
 ```
