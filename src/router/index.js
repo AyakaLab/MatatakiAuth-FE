@@ -11,6 +11,16 @@ const routes = [
     component: Home
   },
   {
+    path: '/auth',
+    name: 'Auth',
+    component: () => import(/* webpackChunkName: "bilibiliauth" */ '../views/Auth/Auth.vue')
+  },
+  {
+    path: '/auth/bilibili',
+    name: 'AuthBilibili',
+    component: () => import(/* webpackChunkName: "bilibiliauth" */ '../views/Auth/Bilibili.vue')
+  },
+  {
     path: '/bilibili/auth/qrcode',
     name: 'BilibiliQRAuth',
     component: () => import(/* webpackChunkName: "bilibiliqrauth" */ '../views/Bilibili/QRAuth.vue')
