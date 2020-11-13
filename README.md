@@ -1,4 +1,9 @@
 <h1 align="center">MatatakiAuth-FE</h1>
+<p align="center">
+    <img src="https://github.com/AyakaLab/MatatakiAuth-FE/workflows/Development%20CI/badge.svg" />
+    <img src="https://github.com/AyakaLab/MatatakiAuth-FE/workflows/Pre-Release%20CI/badge.svg" />
+    <img src="https://github.com/AyakaLab/MatatakiAuth-FE/workflows/Pre-Release%20CD/badge.svg" />
+</p>
 
 
 ## Project setup
