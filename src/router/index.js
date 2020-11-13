@@ -30,6 +30,11 @@ const routes = [
     path: '/bilibili/auth/qrcode',
     name: 'BilibiliQRAuth',
     component: () => import(/* webpackChunkName: "bilibiliqrauth" */ '../views/Bilibili/QRAuth.vue')
+  },
+  {
+    path: '/bilibili/auth/success',
+    name: 'AuthBilibiliSuccess',
+    component: () => import(/* webpackChunkName: "bilibiliauthsuccess" */ '../views/Bilibili/QRLoggedIn.vue')
   }
 ]
 

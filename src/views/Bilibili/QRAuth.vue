@@ -1,29 +1,35 @@
 <template>
-  <div class="scan-container">
-    <img :src="bilibiliIcon" class="scan-container-icon" />
-    <div class="scan-container-title">
-      使用 Bilibili 手机客户端<br>
-      扫描二维码来授权登录
-    </div>
-    <div>
-      <div v-if="scanned" class="qrcode-mask">
-        扫描成功，<br>
-        请在手机上确认
+  <Layout>
+    <div class="scan-container">
+      <img :src="bilibiliIcon" class="scan-container-icon" />
+      <div class="scan-container-title">
+        使用 Bilibili 手机客户端<br>
+        扫描二维码来授权登录
       </div>
-      <qrcode v-if="link" :value="link" :options="{ width: 200 }"></qrcode>
-      <div v-else v-loading="true" class="qrcode-loading">
+      <div>
+        <div v-if="scanned" class="qrcode-mask">
+          扫描成功，<br>
+          请在手机上确认
+        </div>
+        <qrcode v-if="link" :value="link" :options="{ width: 200 }"></qrcode>
+        <div v-else v-loading="true" class="qrcode-loading">
+      </div>
+      </div>
+      <el-button type="primary" @click="refreshInterval" class="refresh-btn">刷新</el-button>
     </div>
-    </div>
-    <el-button type="primary" @click="refreshInterval" class="refresh-btn">刷新</el-button>
-  </div>
+  </Layout>
 </template>
 
 <script>
+import Layout from '@/components/Layout.vue'
 import bilibiliIcon from '@/assets/bilibili.svg'
 
 import API from '@/api/api'
 
 export default {
+  components: {
+    Layout
+  },
   data () {
     return {
       link: '',
@@ -44,6 +50,10 @@ export default {
         if (res.message === 'Can\'t confirm~') {
           this.scanned = true
         }
+        if (res.code === 0) {
+          this.loggedIn = true
+          this.$router.push({ name: 'AuthBilibiliSuccess' })
+        }
         console.log(res)
       }, 1000)
     },
@@ -62,6 +72,7 @@ export default {
         }
         if (res.code === 0) {
           this.loggedIn = true
+          this.$router.push({ name: 'AuthBilibiliSuccess' })
           clearInterval(this.intervalId)
         }
         console.log(res)
@@ -110,7 +121,7 @@ export default {
 }
 
 .qrcode-loading {
-  height: 300px;
+  height: 200px;
   width: 350px;
 }
 
