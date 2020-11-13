@@ -19,7 +19,7 @@ export default {
       if (val.query.token) {
         const c = getCookie('matataki_token')
         if (c) clearCookie('matataki_token')
-        setCookie('matataki_token', val.query.token)
+        setCookie('matataki_token', val.query.token, 999)
         const res = disassemble(val.query.token)
         await this.logIn(res)
         this.$router.push({ name: 'Auth' })
@@ -33,7 +33,7 @@ export default {
     if (this.$route.query.token) {
       const c = getCookie('matataki_token')
       if (c) clearCookie('matataki_token')
-      setCookie('matataki_token', this.$route.query.token)
+      setCookie('matataki_token', this.$route.query.token, 999)
       const res = disassemble(this.$route.query.token)
       await this.logIn(res)
       this.$router.push({ name: 'Auth' })

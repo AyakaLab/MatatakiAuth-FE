@@ -84,7 +84,7 @@ export default {
   methods: {
     ...mapActions(['logIn', 'logOut']),
     signIn () {
-      window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth'
+      window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth?network=test'
     },
     signOut () {
       this.logOut()

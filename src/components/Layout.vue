@@ -35,5 +35,7 @@ export default {
 .footer-container {
   height: 56px;
   text-align: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
 }
 </style>
