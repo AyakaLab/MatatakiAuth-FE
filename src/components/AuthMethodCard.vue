@@ -72,6 +72,7 @@ a {
   height: 180px;
   width: 280px;
   border-radius: 10px;
+  margin: 0 auto;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 6px 10px rgba(0,0,0,0.22);
   &:hover {
     transform: translateX(-2px);

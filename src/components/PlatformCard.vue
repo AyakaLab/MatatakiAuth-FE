@@ -62,6 +62,7 @@ a {
 .platform {
   height: 180px;
   width: 280px;
+  margin: 0 auto;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1), 0 6px 10px rgba(0,0,0,0.22);
   &:hover {

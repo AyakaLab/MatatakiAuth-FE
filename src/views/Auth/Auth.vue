@@ -98,4 +98,30 @@ export default {
   grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
   grid-gap: 48px 60px;
 }
+
+@media screen and (max-width: 1200px) {
+
+}
+
+@media screen and (max-width: 992px) {
+  .platformcard-container {
+    margin: 20px 200px 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+
+}
+
+@media screen and (max-width: 640px) {
+  .platformcard-container {
+    margin: 20px 150px 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .platformcard-container {
+    margin: 20px 20px 20px;
+  }
+}
 </style>
