@@ -5,9 +5,21 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import { disassemble, getCookie } from './utils/cookie'
 
 export default {
-  name: 'app'
+  name: 'app',
+  methods: {
+    ...mapActions(['logIn'])
+  },
+  async mounted () {
+    const c = getCookie('matataki_token')
+    if (c) {
+      const res = disassemble(c)
+      await this.logIn(res)
+    }
+  }
 }
 </script>
 

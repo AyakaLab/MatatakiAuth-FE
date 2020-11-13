@@ -31,26 +31,63 @@
         </div>
       </el-dropdown-menu>
     </el-dropdown>
+    <el-dropdown
+      placement="bottom-start"
+      v-else
+      class="user-menu"
+    >
+      <div class="user-avatar">
+        <img
+          :src="defaultAvatar"
+          alt="user avatar"
+          class="avatar"
+        >
+      </div>
+      <el-dropdown-menu
+        slot="dropdown"
+        class="user-dorpdown"
+      >
+        <div
+          class="link border-br-bl"
+          @click="signIn"
+        >
+          <el-dropdown-item icon="el-icon-user-solid">
+            登录
+          </el-dropdown-item>
+        </div>
+      </el-dropdown-menu>
+    </el-dropdown>
   </div>
 </template>
 
 <script>
 import logo from '@/assets/logo.png'
 import apps from '@/assets/apps.png'
+import defaultAvatar from '@/assets/default_avatar.png'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data () {
     return {
       logo: logo,
       apps: apps,
-      isLoggedIn: true,
-      userAvatar: 'https://avatars3.githubusercontent.com/u/11081491?s=460&u=9e6f9289cfd4263253fc39e15cad72ec6fe95235&v=4'
+      defaultAvatar: defaultAvatar
     }
   },
+  computed: {
+    ...mapState(['isLoggedIn', 'userAvatar'])
+  },
   methods: {
+    ...mapActions(['logIn', 'logOut']),
+    signIn () {
+      window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth'
+    },
     signOut () {
-
+      this.logOut()
     }
+  },
+  mounted () {
+    console.log(this.isLoggedIn)
   }
 }
 </script>

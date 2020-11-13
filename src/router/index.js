@@ -11,6 +11,12 @@ const routes = [
     component: Home
   },
   {
+    path: '/oauth/:id',
+    name: 'OAuth',
+    component: () => import(/* webpackChunkName: "oauth" */ '../views/OAuth.vue'),
+    props: true
+  },
+  {
     path: '/auth',
     name: 'Auth',
     component: () => import(/* webpackChunkName: "bilibiliauth" */ '../views/Auth/Auth.vue')
