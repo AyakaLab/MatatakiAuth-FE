@@ -12,7 +12,7 @@
         <img :src="safetyIcon" class="main-image-for"/>
         <img :src="balancerIcon" class="main-image-fiv"/>
       </div>
-      <el-button plain round type="primary" class="main-button">现在开始</el-button>
+      <el-button plain round type="primary" class="main-button" @click="start">现在开始</el-button>
     </div>
   </Layout>
 </template>
@@ -25,6 +25,7 @@ import accountIcon from '@/assets/account.png'
 import balancerIcon from '@/assets/balancer.png'
 import safetyIcon from '@/assets/safety.png'
 import chartIcon from '@/assets/chart.png'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Home',
@@ -38,6 +39,15 @@ export default {
       balancerIcon: balancerIcon,
       safetyIcon: safetyIcon,
       chartIcon: chartIcon
+    }
+  },
+  computed: {
+    ...mapState(['isLoggedIn'])
+  },
+  methods: {
+    start () {
+      if (this.isLoggedIn) this.$router.push({ name: 'Auth' })
+      else window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth'
     }
   }
 }

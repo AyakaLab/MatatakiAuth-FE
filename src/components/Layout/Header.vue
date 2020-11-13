@@ -1,8 +1,12 @@
 <template>
   <div class="header-container">
-    <img :src="apps" class="logo left-one"/>
+    <router-link :to="{ name: isLoggedIn ? 'Auth' : 'Home' }">
+      <img :src="apps" class="logo left-one"/>
+    </router-link>
     <div style="flex: 1;"> </div>
-    <img :src="logo" class="logo"/>
+    <router-link :to="{ name: 'Home' }">
+      <img :src="logo" class="logo"/>
+    </router-link>
     <div style="flex: 1;"> </div>
     <el-dropdown
       placement="bottom-start"
