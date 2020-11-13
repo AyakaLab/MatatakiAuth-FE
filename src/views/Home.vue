@@ -215,6 +215,10 @@ export default {
     margin-bottom: 0px;
   }
 
+  .main-button {
+    margin-top: 40px;
+  }
+
   .main-title {
     &-one {
       font-size: 42px;
@@ -257,6 +261,10 @@ export default {
   .main-container {
     margin-top: 50px;
     margin-bottom: 0px;
+  }
+
+  .main-button {
+    margin-top: 0px;
   }
 
   .main-title {

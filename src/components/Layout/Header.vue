@@ -83,4 +83,18 @@ export default {
 .header-container {
   box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
+
+@media screen and (max-width: 640px) {
+  .logo {
+    transform: scale(0.7);
+  }
+
+  .left-one {
+    transform: scale(0.7);
+  }
+
+  .avatar {
+    transform: scale(0.7);
+  }
+}
 </style>
