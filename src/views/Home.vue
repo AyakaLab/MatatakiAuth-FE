@@ -47,7 +47,7 @@ export default {
   methods: {
     start () {
       if (this.isLoggedIn) this.$router.push({ name: 'Auth' })
-      else window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth?network=test'
+      else window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth'
     }
   }
 }
