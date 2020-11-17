@@ -29,6 +29,7 @@ import Layout from '@/components/Layout.vue'
 import bilibiliIcon from '@/assets/bilibili.svg'
 
 import API from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -45,13 +46,16 @@ export default {
       intervalId: null
     }
   },
+  computed: {
+    ...mapState(['userId'])
+  },
   methods: {
     async getQrcodeLink () {
       const res = await API.Bilibili.getQrcode()
       this.link = res.url
       this.hashId = res.hashId
       this.intervalId = setInterval(async () => {
-        const res = await API.Bilibili.getLoginStatus(this.hashId)
+        const res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
         if (res.message === 'Can\'t confirm~') {
           this.scanned = true
         }
@@ -73,7 +77,7 @@ export default {
       this.timedout = false
       clearInterval(this.intervalId)
       this.intervalId = setInterval(async () => {
-        const res = await API.Bilibili.getLoginStatus(this.hashId)
+        const res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
         if (res.message === 'Can\'t confirm~') {
           this.scanned = true
         }
