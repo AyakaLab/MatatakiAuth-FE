@@ -1,6 +1,6 @@
 import Axios from 'axios'
 
-const MATATAKIAPI = 'https://apitest.smartsignature.io'
+const MATATAKIAPI = 'https://api.smartsignature.io'
 const MTTKIMGCDN = 'https://ssimg.frontenduse.top'
 
 export function getUserProfile (uid) {
