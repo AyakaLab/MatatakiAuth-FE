@@ -47,7 +47,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userId'])
+    ...mapState(['userId', 'isLoggedIn'])
   },
   methods: {
     async getQrcodeLink () {
@@ -93,8 +93,14 @@ export default {
       }, 1000)
     }
   },
+  watch: {
+    isLoggedIn (val) {
+      if (!val) this.$router.push({ name: 'Home' })
+    }
+  },
   async mounted () {
     await this.getQrcodeLink()
+    if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
   },
   destroyed () {
     clearInterval(this.intervalId)

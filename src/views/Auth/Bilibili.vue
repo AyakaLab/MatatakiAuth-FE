@@ -10,6 +10,7 @@
 <script>
 import Layout from '@/components/Layout.vue'
 import AuthMethodCard from '@/components/AuthMethodCard.vue'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -27,6 +28,17 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapState(['isLoggedIn'])
+  },
+  watch: {
+    isLoggedIn (val) {
+      if (!val) this.$router.push({ name: 'Home' })
+    }
+  },
+  mounted () {
+    if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
   }
 }
 </script>
