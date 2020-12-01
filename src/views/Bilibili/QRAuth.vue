@@ -47,15 +47,25 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userId', 'isLoggedIn'])
+    ...mapState(['userId', 'isLoggedIn', 'network'])
   },
   methods: {
     async getQrcodeLink () {
-      const res = await API.Bilibili.getQrcode()
+      let res = {}
+      if (this.network === 'test') {
+        res = await API.Bilibili.getQrcodeTest()
+      } else {
+        res = await API.Bilibili.getQrcode()
+      }
       this.link = res.url
       this.hashId = res.hashId
       this.intervalId = setInterval(async () => {
-        const res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
+        let res = {}
+        if (this.network === 'test') {
+          res = await API.Bilibili.getLoginStatusTest(this.hashId, this.userId)
+        } else {
+          res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
+        }
         if (res.message === 'Can\'t confirm~') {
           this.scanned = true
         }
@@ -65,25 +75,33 @@ export default {
         }
         if (res.code === -10) {
           this.timedout = true
-          // this.refreshInterval()
         }
       }, 1000)
     },
     async refreshInterval () {
-      const res = await API.Bilibili.getQrcode()
+      let res = {}
+      if (this.network === 'test') {
+        res = await API.Bilibili.getQrcodeTest()
+      } else {
+        res = await API.Bilibili.getQrcode()
+      }
       this.link = res.url
       this.hashId = res.hashId
       this.loggedIn = false
       this.timedout = false
       clearInterval(this.intervalId)
       this.intervalId = setInterval(async () => {
-        const res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
+        let res = {}
+        if (this.network === 'test') {
+          res = await API.Bilibili.getLoginStatusTest(this.hashId, this.userId)
+        } else {
+          res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
+        }
         if (res.message === 'Can\'t confirm~') {
           this.scanned = true
         }
         if (res.code === -10 && !this.loggedIn) {
           this.timedout = true
-          // this.refreshInterval()
         }
         if (res.code === 0) {
           this.loggedIn = true

@@ -13,7 +13,7 @@ export default {
     Layout
   },
   computed: {
-    ...mapState(['isLoggedIn'])
+    ...mapState(['isLoggedIn', 'network'])
   },
   watch: {
     isLoggedIn (val) {
@@ -24,7 +24,7 @@ export default {
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
     else {
       setTimeout(() => {
-        this.$router.push({ name: 'Auth' })
+        window.location.href = this.network === 'test' ? 'https://test.matataki.io/setting/account' : 'https://matataki.io/setting/account'
       }, 3000)
     }
   }
