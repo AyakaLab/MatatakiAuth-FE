@@ -1,4 +1,4 @@
 module.exports = {
-  publicPath: process.env.BASE_URL,
-  assetsDir: process.env.BASE_URL
+  publicPath: process.env.VUE_PUBLIC_URL,
+  assetsDir: process.env.VUE_PUBLIC_URL
 }
