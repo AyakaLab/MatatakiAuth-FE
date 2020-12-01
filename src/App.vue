@@ -5,15 +5,20 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { disassemble, getCookie } from './utils/cookie'
 
 export default {
   name: 'app',
   methods: {
-    ...mapActions(['logIn'])
+    ...mapActions(['logIn']),
+    ...mapMutations(['setNetwork'])
   },
   async mounted () {
+    const n = getCookie('matataki_network')
+    if (n) {
+      this.setNetwork(n)
+    }
     const c = getCookie('matataki_token')
     if (c) {
       const res = disassemble(c)

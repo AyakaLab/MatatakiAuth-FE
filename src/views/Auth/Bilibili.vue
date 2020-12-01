@@ -10,7 +10,9 @@
 <script>
 import Layout from '@/components/Layout.vue'
 import AuthMethodCard from '@/components/AuthMethodCard.vue'
-import { mapState } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
+
+import { setCookie, getCookie, clearCookie, disassemble } from '../../utils/cookie'
 
 export default {
   components: {
@@ -35,10 +37,33 @@ export default {
   watch: {
     isLoggedIn (val) {
       if (!val) this.$router.push({ name: 'Home' })
+    },
+    async $route (val) {
+      if (val.query.token) {
+        this.cookieControl(val.query)
+      }
     }
   },
-  mounted () {
-    if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
+  methods: {
+    ...mapActions(['logIn']),
+    ...mapMutations(['setNetwork']),
+    async cookieControl (query) {
+      this.setNetwork(query.network)
+      const n = getCookie('matataki_network')
+      if (n) clearCookie('matataki_network')
+      setCookie('matataki_network', query.network)
+      const c = getCookie('matataki_token')
+      if (c) clearCookie('matataki_token')
+      setCookie('matataki_token', query.token)
+      const res = disassemble(query.token)
+      await this.logIn(res)
+      this.$router.push({ name: 'Auth' })
+    }
+  },
+  async mounted () {
+    if (this.$route.query.token) {
+      this.cookieControl(this.$route.query)
+    } else if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
   }
 }
 </script>

@@ -69,6 +69,7 @@ import logo from '@/assets/logo.png'
 import apps from '@/assets/apps.png'
 import defaultAvatar from '@/assets/default_avatar.png'
 import { mapActions, mapState } from 'vuex'
+import { clearCookie } from '../../utils/cookie'
 
 export default {
   data () {
@@ -87,7 +88,10 @@ export default {
       window.location = 'https://developer.matataki.io/app/e07431eac495fad8/oauth'
     },
     signOut () {
+      clearCookie('matataki_token')
+      clearCookie('matataki_network')
       this.logOut()
+      location.reload()
     }
   },
   mounted () {

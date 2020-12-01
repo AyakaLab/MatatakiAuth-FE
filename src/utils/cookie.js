@@ -30,7 +30,7 @@ export function setCookie (cname, token, exp) {
   const date = new Date(Date.now())
   date.setDate(date.getDate() + exp)
 
-  document.cookie = cname + '=' + token + '; expires=' + date.toUTCString()
+  document.cookie = cname + '=' + token + '; expires=' + date.toUTCString() + '; path=/'
 }
 
 /**
