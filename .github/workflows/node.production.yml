@@ -5,7 +5,7 @@ name: Production CI/CD
 
 on:
   pull_request:
-    branches: [ pre-release ]
+    branches: [ production ]
 
 jobs:
   build-ci:
