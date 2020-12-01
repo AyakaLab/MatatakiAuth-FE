@@ -1,4 +1,4 @@
-name: Pre-Release CD
+name: Production CD
 
 on: 
   pull_request:
