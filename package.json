@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
-    "testbuild": "TESTENV=test vue-cli-service build",
+    "testbuild": "vue-cli-service build --mode teststage",
     "test": "echo \"Info: no test specified\" && exit 0"
   },
   "dependencies": {
