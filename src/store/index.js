@@ -11,7 +11,8 @@ export default new Vuex.Store({
     userAvatar: '',
     username: '',
     userProfile: {},
-    userId: 0
+    userId: 0,
+    network: 'main'
   },
   mutations: {
     setLoggedIn (state, status) {
@@ -28,12 +29,20 @@ export default new Vuex.Store({
     },
     setUserId (state, id) {
       state.userId = id
+    },
+    setNetwork (state, network) {
+      state.network = network
     }
   },
   actions: {
     async logIn ({ commit }, data) {
       commit('setLoggedIn', true)
-      const profile = await API.Matataki.getUserProfile(data.id)
+      let profile = {}
+      if (this.state.network === 'test') {
+        profile = await API.Matataki.getUserProfileTest(data.id)
+      } else {
+        profile = await API.Matataki.getUserProfile(data.id)
+      }
       const avatar = await API.Matataki.getAvatarUrl(profile.data.data.avatar)
       commit('setUsername', profile.data.data.nickname)
       commit('setUserId', data.id)
@@ -46,6 +55,7 @@ export default new Vuex.Store({
       commit('setUserId', 0)
       commit('setUserAvatar', '')
       commit('setUserProfile', {})
+      commit('setNetwork', '')
     }
   },
   modules: {
