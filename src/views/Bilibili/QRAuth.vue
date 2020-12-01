@@ -1,75 +1,124 @@
 <template>
-  <div class="scan-container">
-    <img :src="bilibiliIcon" class="scan-container-icon" />
-    <div class="scan-container-title">
-      使用 Bilibili 手机客户端<br>
-      扫描二维码来授权登录
-    </div>
-    <div>
-      <div v-if="scanned" class="qrcode-mask">
-        扫描成功，<br>
-        请在手机上确认
+  <Layout>
+    <div class="scan-container">
+      <img :src="bilibiliIcon" class="scan-container-icon" />
+      <div class="scan-container-title">
+        使用 Bilibili 手机客户端<br>
+        扫描二维码来授权登录
       </div>
-      <qrcode v-if="link" :value="link" :options="{ width: 200 }"></qrcode>
-      <div v-else v-loading="true" class="qrcode-loading">
+      <div>
+        <div v-if="scanned" class="qrcode-mask">
+          扫描成功，<br>
+          请在手机上确认
+        </div>
+        <div v-if="timedout" class="qrcode-mask">
+          二维码已过期，<br>
+          请点击刷新或刷新页面
+        </div>
+        <qrcode v-if="link" :value="link" :options="{ width: 200 }"></qrcode>
+        <div v-else v-loading="true" class="qrcode-loading">
+      </div>
+      </div>
+      <el-button type="primary" @click="refreshInterval" class="refresh-btn">刷新</el-button>
     </div>
-    </div>
-    <el-button type="primary" @click="refreshInterval" class="refresh-btn">刷新</el-button>
-  </div>
+  </Layout>
 </template>
 
 <script>
+import Layout from '@/components/Layout.vue'
 import bilibiliIcon from '@/assets/bilibili.svg'
 
 import API from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
+  components: {
+    Layout
+  },
   data () {
     return {
       link: '',
       hashId: '',
       scanned: false,
       loggedIn: true,
+      timedout: false,
       bilibiliIcon: bilibiliIcon,
       intervalId: null
     }
   },
+  computed: {
+    ...mapState(['userId', 'isLoggedIn', 'network'])
+  },
   methods: {
     async getQrcodeLink () {
-      const res = await API.Bilibili.getQrcode()
+      let res = {}
+      if (this.network === 'test') {
+        res = await API.Bilibili.getQrcodeTest()
+      } else {
+        res = await API.Bilibili.getQrcode()
+      }
       this.link = res.url
       this.hashId = res.hashId
       this.intervalId = setInterval(async () => {
-        const res = await API.Bilibili.getLoginStatus(this.hashId)
+        let res = {}
+        if (this.network === 'test') {
+          res = await API.Bilibili.getLoginStatusTest(this.hashId, this.userId)
+        } else {
+          res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
+        }
         if (res.message === 'Can\'t confirm~') {
           this.scanned = true
-        }
-        console.log(res)
-      }, 1000)
-    },
-    async refreshInterval () {
-      const res = await API.Bilibili.getQrcode()
-      this.link = res.url
-      this.hashId = res.hashId
-      clearInterval(this.intervalId)
-      this.intervalId = setInterval(async () => {
-        const res = await API.Bilibili.getLoginStatus(this.hashId)
-        if (res.message === 'Can\'t confirm~') {
-          this.scanned = true
-        }
-        if (res.message === '请求已过期，请重新申请' && !this.loggedIn) {
-          this.refreshInterval()
         }
         if (res.code === 0) {
           this.loggedIn = true
+          this.$router.push({ name: 'AuthBilibiliSuccess' })
+        }
+        if (res.code === -10) {
+          this.timedout = true
+        }
+      }, 1000)
+    },
+    async refreshInterval () {
+      let res = {}
+      if (this.network === 'test') {
+        res = await API.Bilibili.getQrcodeTest()
+      } else {
+        res = await API.Bilibili.getQrcode()
+      }
+      this.link = res.url
+      this.hashId = res.hashId
+      this.loggedIn = false
+      this.timedout = false
+      clearInterval(this.intervalId)
+      this.intervalId = setInterval(async () => {
+        let res = {}
+        if (this.network === 'test') {
+          res = await API.Bilibili.getLoginStatusTest(this.hashId, this.userId)
+        } else {
+          res = await API.Bilibili.getLoginStatus(this.hashId, this.userId)
+        }
+        if (res.message === 'Can\'t confirm~') {
+          this.scanned = true
+        }
+        if (res.code === -10 && !this.loggedIn) {
+          this.timedout = true
+        }
+        if (res.code === 0) {
+          this.loggedIn = true
+          this.$router.push({ name: 'AuthBilibiliSuccess' })
           clearInterval(this.intervalId)
         }
-        console.log(res)
       }, 1000)
+    }
+  },
+  watch: {
+    isLoggedIn (val) {
+      if (!val) this.$router.push({ name: 'Home' })
     }
   },
   async mounted () {
     await this.getQrcodeLink()
+    if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
   },
   destroyed () {
     clearInterval(this.intervalId)
@@ -110,7 +159,7 @@ export default {
 }
 
 .qrcode-loading {
-  height: 300px;
+  height: 200px;
   width: 350px;
 }
 
