@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "testbuild": "TESTENV=test vue-cli-service build",
     "test": "echo \"Info: no test specified\" && exit 0"
   },
   "dependencies": {
