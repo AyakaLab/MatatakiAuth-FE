@@ -45,19 +45,24 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['logIn']),
+    ...mapActions(['logIn', 'logOut']),
     ...mapMutations(['setNetwork']),
     async cookieControl (query) {
       this.setNetwork(query.network)
       const n = getCookie('matataki_network')
-      if (n) clearCookie('matataki_network')
+      if (n) {
+        clearCookie('matataki_network')
+        this.logOut()
+      }
       setCookie('matataki_network', query.network)
       const c = getCookie('matataki_token')
-      if (c) clearCookie('matataki_token')
+      if (c) {
+        clearCookie('matataki_token')
+        this.logOut()
+      }
       setCookie('matataki_token', query.token)
       const res = disassemble(query.token)
       await this.logIn(res)
-      this.$router.push({ name: 'Auth' })
     }
   },
   async mounted () {
