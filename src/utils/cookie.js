@@ -39,7 +39,7 @@ export function setCookie (cname, token, exp) {
  * @param {String} cname   - Cookie's name Cookie 的名字
  */
 export function clearCookie (cname) {
-  document.cookie = `${cname}=; expires=Thu, 01 Jan 1970 00:00:01 GMT`
+  document.cookie = `${cname}=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/`
 }
 
 export function disassemble (token) {

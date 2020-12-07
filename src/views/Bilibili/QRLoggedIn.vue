@@ -24,7 +24,7 @@ export default {
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
     else {
       setTimeout(() => {
-        window.location.href = this.network === 'test' ? 'https://test.matataki.io/setting/account' : 'https://matataki.io/setting/account'
+        window.close()
       }, 3000)
     }
   }
