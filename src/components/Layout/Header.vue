@@ -91,7 +91,6 @@ export default {
       clearCookie('matataki_token')
       clearCookie('matataki_network')
       this.logOut()
-      location.reload()
     }
   },
   mounted () {

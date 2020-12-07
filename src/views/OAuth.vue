@@ -18,7 +18,10 @@ export default {
     async $route (val) {
       if (val.query.token) {
         const c = getCookie('matataki_token')
-        if (c) clearCookie('matataki_token')
+        if (c) {
+          clearCookie('matataki_token')
+          this.logOut()
+        }
         setCookie('matataki_token', val.query.token, 999)
         const res = disassemble(val.query.token)
         await this.logIn(res)
@@ -27,12 +30,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['logIn'])
+    ...mapActions(['logIn', 'logOut'])
   },
   async mounted () {
     if (this.$route.query.token) {
       const c = getCookie('matataki_token')
-      if (c) clearCookie('matataki_token')
+      if (c) {
+        clearCookie('matataki_token')
+        this.logOut()
+      }
+      this.setNetwork('main')
       setCookie('matataki_token', this.$route.query.token, 999)
       const res = disassemble(this.$route.query.token)
       await this.logIn(res)
