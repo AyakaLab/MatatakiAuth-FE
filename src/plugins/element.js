@@ -3,3 +3,5 @@ import Element from 'element-ui'
 import '../element-variables.scss'
 
 Vue.use(Element)
+
+Vue.prototype.$message = Element.Message
