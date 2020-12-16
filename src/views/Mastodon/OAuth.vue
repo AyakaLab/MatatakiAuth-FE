@@ -2,54 +2,31 @@
   <Layout>
     <div class="oauth-container">
       <img :src="mastodonIcon" class="oauth-container-icon" />
-      <div v-if="step1">
-        <div class="oauth-container-step">
-          第一步 Step 1
+      <div class="oauth-container-steps">
+        <div class="oauth-container-steps-title">
+          使用你的账号在 Mastodon 发布以下内容<br>
+          <div class="oauth-container-steps-oauth">
+            <span class="oauth-container-steps-oauth-strong">{{ randomStr }}</span>
+            <span class="icon"><i class="el-icon-s-order" @click="copyToClipboard(randomStr)" type="primary" ></i></span><br>
+          </div>
+          <span>然后粘贴你的嘟文链接到输入框</span><br>
         </div>
-        <div class="oauth-container-title">
-          请先填写你的用户名以开始验证<br>
-          <span class="oauth-container-title-strong">用户名必须包含你注册的实例的域名</span>
-        </div>
-        <el-input class="oauth-container-input" v-model="username" placeholder="@username@example.com" @keyup.enter.native="submit(username)"></el-input>
+        <el-input class="oauth-container-steps-input" v-model="tootLink" placeholder="https://example.com/@username/0000000000000000" @keyup.enter.native="submit(tootLink)"></el-input>
       </div>
-      <div v-if="step2">
-        <div class="oauth-container-step">
-          第二步 Step 2
-        </div>
-        <div class="oauth-container-title">
-          <br>
-          <span class="oauth-container-title-strong"></span>
-        </div>
-        <el-input class="oauth-container-input" v-model="username" placeholder="@username@example.com" @keyup.enter.native="submit(username)"></el-input>
-      </div>
-      <el-button type="primary" @click="submit(username)">{{ buttonText }}</el-button>
+      <el-button class="verify-btn" type="primary" @click="submit(tootLink)" :loading="btnLoading">{{ buttonText }}</el-button>
     </div>
   </Layout>
 </template>
 
 <script>
-
-/**
- * 步骤 1
- * 填写用户名和域名
- * 验证域名是否是一个合法的域名
- * 验证域名是否是一个合法的 mastodon 实例
- * 步骤 2
- * 获取用户的用户 id
- * 根据对应的时间戳和 id 生成指定的识别码
- * 步骤 3
- * 生成 40 字节的识别码
- * 要求用户在 mastodon 发布填写有识别码的嘟文
- * 获取用户嘟文状态，读取识别码
- * 如果匹配，存储 username 以及 id
- * 提示用户绑定成功
- */
+import crypto from 'crypto'
+import { mapState } from 'vuex'
 
 import Layout from '@/components/Layout.vue'
 import mastodonIcon from '@/assets/mastodon.png'
 
 import API from '@/api/api'
-import { mapState } from 'vuex'
+import { getCookie } from '../../utils/cookie'
 
 export default {
   components: {
@@ -59,9 +36,13 @@ export default {
     return {
       mastodonIcon: mastodonIcon,
       username: '',
+      domain: '',
+      protocol: '',
+      tootLink: '',
+      randomStr: '',
       buttonText: '确认',
-      step1: true,
-      step2: false
+      oauthToken: '',
+      btnLoading: false
     }
   },
   computed: {
@@ -69,28 +50,88 @@ export default {
   },
   methods: {
     submit (text) {
-      let result = ''
-      if (text.startsWith('@')) {
-        result = text.replace(/^@/, '')
-        this.usernameInputValidator(result)
-      } else {
-        this.usernameInputValidator(text)
-      }
+      this.btnLoading = true
+      this.tootInputValidator(text)
     },
-    usernameInputValidator (inputText) {
-      let resultArr = []
-      resultArr = inputText.split('@')
-      if (!resultArr[1]) {
-        this.$message.error('输入的用户名没有包含实例地址')
-      } else if (!/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/.test(resultArr[1])) {
+    async tootInputValidator (inputText) {
+      if (!/^https?:\/\//.test(inputText)) {
+        this.$message.error('请复制完整的包含 https/http 的链接')
+        return
+      }
+      if (!/^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\/(@([a-zA-Z0-9])*)\/\d+$/.test(inputText)) {
+        this.$message.error('输入的嘟文地址无效')
+        return
+      }
+
+      this.btnLoading = true
+
+      const domain = inputText.match(/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)
+      const protocol = inputText.match(/^https?:\/\//)
+      const statusId = inputText.replace(/https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\/(@([a-zA-Z0-9])*)\//, '')
+
+      console.log(statusId)
+      await this.getToken()
+      if (!domain) {
         this.$message.error('输入的实例地址无效')
       } else {
-        console.log(inputText)
-        this.mastodonInstanceValidator(resultArr[1])
+        this.tootLink = inputText
+        this.domain = domain[0]
+        if (protocol[0]) this.protocol = protocol[0]
+        else this.protocol = 'http://'
+
+        const isMastodon = await this.mastodonInstanceValidator(protocol[0] + this.domain)
+        if (isMastodon) {
+        } else {
+          this.$message.error('输入的实例地址不是一个 Mastodon 实例')
+        }
       }
+      this.btnLoading = false
     },
-    async mastodonInstanceValidator (domain) {
-      await API.Mastodon.isMastodonInstance(domain)
+    async mastodonInstanceValidator (url) {
+      console.log(url)
+      return (await API.Mastodon.isMastodonInstance(url))
+    },
+    async tootValidator (statusId) {
+    },
+    getRandomString () {
+      return crypto.randomBytes(10).toString('hex')
+    },
+    async getToken () {
+      const c = getCookie('matataki_token')
+      let res = {}
+      if (this.network === 'test') {
+        res = await API.Mastodon.getOAuthTokenTest(c)
+      } else {
+        res = await API.Mastodon.getOAuthToken(c)
+      }
+      this.oauthToken = res.token
+    },
+    copyToClipboard (text) {
+      if (window.clipboardData && window.clipboardData.setData) {
+        // IE specific code path to prevent textarea being shown while dialog is visible.
+        return window.clipboardData.setData('Text', text)
+      } else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+        var textarea = document.createElement('textarea')
+        textarea.textContent = text
+        textarea.style.position = 'fixed' // Prevent scrolling to bottom of page in MS Edge.
+        document.body.appendChild(textarea)
+        textarea.select()
+        try {
+          this.$notify.success({
+            title: '复制成功',
+            message: '内容已经成功复制到剪贴板'
+          })
+          return document.execCommand('copy') // Security exception may be thrown by some browsers.
+        } catch (ex) {
+          this.$notify.error({
+            title: '复制失败',
+            message: '请手动复制内容'
+          })
+          return false
+        } finally {
+          document.body.removeChild(textarea)
+        }
+      }
     }
   },
   watch: {
@@ -99,6 +140,7 @@ export default {
     }
   },
   async mounted () {
+    this.randomStr = this.getRandomString()
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
   },
   destroyed () {
@@ -109,54 +151,47 @@ export default {
 
 <style lang="less" scoped>
 .oauth-container {
-  height: 330px;
-  width: 350px;
+  height: 350px;
+  width: 370px;
   -webkit-box-shadow: 0 10px 40px 0 rgba(0,0,0,.1);
   box-shadow: 0 10px 40px 0 rgba(0,0,0,.1);
   margin: 100px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 30px 20px;
+  box-sizing: border-box;
   &-icon {
-    padding-top: 30px;
     height: 50px;
     object-fit: cover;
   }
-  &-step {
-    margin: 10px auto 10px;
-    font-size: 20px;
-  }
-  &-title {
-    padding-top: 5px;
-    &-strong {
-      font-size: 14px;
-      color: red;
+  &-steps {
+    flex: 1;
+    &-title {
+      margin-top: 10px;
+    }
+    &-oauth {
+      margin: 10px auto 10px;
+      &-strong {
+        font-size: 14px;
+        color: red;
+      }
+    }
+    &-input {
+      width: 100%;
+      margin: 20px auto 20px;
     }
   }
-  &-input {
-    width: 300px;
-    margin: 20px auto 20px;
+}
+
+.icon {
+  margin-left: 5px;
+  display: inline-block;
+  &:hover {
+    color: #4829D6;
   }
-}
-
-.qrcode-mask {
-  height: 200px;
-  width: 200px;
-  background: rgba(0,0,0,.6);
-  position: absolute;
-  color: white;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.qrcode-loading {
-  height: 200px;
-  width: 350px;
-}
-
-.refresh-btn {
-  margin-bottom: 20px;
+  &:active {
+    color: #333;
+  }
 }
 </style>
