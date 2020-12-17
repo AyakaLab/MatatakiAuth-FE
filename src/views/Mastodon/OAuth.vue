@@ -27,6 +27,7 @@ import mastodonIcon from '@/assets/mastodon.png'
 
 import API from '@/api/api'
 import { getCookie } from '../../utils/cookie'
+import { Limiter } from '../../utils/limiter'
 
 export default {
   components: {
@@ -54,12 +55,21 @@ export default {
       this.tootInputValidator(text)
     },
     async tootInputValidator (inputText) {
-      if (!/^https?:\/\//.test(inputText)) {
-        this.$message.error('请复制完整的包含 https/http 的链接')
+      if (!inputText) {
+        this.$message.error('链接不能为空')
+        this.btnLoading = false
         return
       }
+
+      if (!/^https?:\/\//.test(inputText)) {
+        this.$message.error('请复制完整的包含 https/http 的链接')
+        this.btnLoading = false
+        return
+      }
+
       if (!/^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\/(@([a-zA-Z0-9])*)\/\d+$/.test(inputText)) {
         this.$message.error('输入的嘟文地址无效')
+        this.btnLoading = false
         return
       }
 
@@ -69,8 +79,8 @@ export default {
       const protocol = inputText.match(/^https?:\/\//)
       const statusId = inputText.replace(/https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\/(@([a-zA-Z0-9])*)\//, '')
 
-      console.log(statusId)
       await this.getToken()
+      console.log()
       if (!domain) {
         this.$message.error('输入的实例地址无效')
       } else {
@@ -79,8 +89,32 @@ export default {
         if (protocol[0]) this.protocol = protocol[0]
         else this.protocol = 'http://'
 
+        const limit = Limiter.check('tootcheck')
+        if (limit.code === 1) {
+          this.$message.warning(`重复操作次数过多，请等待 ${Math.ceil(limit.time / 10 ** 3)} 秒再试`)
+          return
+        }
+
         const isMastodon = await this.mastodonInstanceValidator(protocol[0] + this.domain)
         if (isMastodon) {
+          const result = await API.Mastodon.getStatus(this.protocol + this.domain, statusId, this.randomStr)
+          if (result) {
+            let updateRes
+            if (this.network === 'test') {
+              updateRes = await API.Mastodon.getUpdateTest(this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
+            } else {
+              updateRes = await API.Mastodon.getUpdate(this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
+            }
+
+            if (updateRes.code === 0) {
+              this.$message.success('成功')
+              this.$router.push({ name: 'AuthMastodonSuccess' })
+            }
+          } else {
+            this.$message.error('嘟文文本没有包含指定的字符串，请重新尝试')
+          }
+          this.btnLoading = false
+          return
         } else {
           this.$message.error('输入的实例地址不是一个 Mastodon 实例')
         }
@@ -88,7 +122,6 @@ export default {
       this.btnLoading = false
     },
     async mastodonInstanceValidator (url) {
-      console.log(url)
       return (await API.Mastodon.isMastodonInstance(url))
     },
     async tootValidator (statusId) {
@@ -140,8 +173,14 @@ export default {
     }
   },
   async mounted () {
+    Limiter.create('tootcheck', 10000)
     this.randomStr = this.getRandomString()
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
+    else {
+      setTimeout(() => {
+        window.close()
+      }, 3000)
+    }
   },
   destroyed () {
     clearInterval(this.intervalId)
