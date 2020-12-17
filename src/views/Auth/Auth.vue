@@ -12,10 +12,7 @@ import Layout from '@/components/Layout.vue'
 import PlatformCard from '@/components/PlatformCard.vue'
 
 import bilibiliIcon from '@/assets/bilibili_blue.png'
-import neteaseCloudMusicIcon from '@/assets/netease_cloudmusic.png'
-import soundCloudIcon from '@/assets/soundcloud.png'
-import bandcampIcon from '@/assets/bandcamp.png'
-import twitterIcon from '@/assets/twitter.png'
+import mastodonIcon from '@/assets/mastodon.png'
 import { mapState } from 'vuex'
 
 export default {
@@ -27,10 +24,7 @@ export default {
     return {
       icon: {
         bilibili: bilibiliIcon,
-        neteaseCloudMusic: neteaseCloudMusicIcon,
-        soundcloud: soundCloudIcon,
-        bandcamp: bandcampIcon,
-        twitter: twitterIcon
+        mastodon: mastodonIcon
       },
       availableList: [
         {
@@ -42,32 +36,12 @@ export default {
           status: 0
         },
         {
-          name: 'twitter',
-          displayName: 'Twitter',
-          logo: twitterIcon,
-          color: '#4AABE7',
-          status: -1
-        },
-        {
-          name: 'neteasecloudmusic',
-          displayName: '网易云音乐',
-          logo: neteaseCloudMusicIcon,
-          color: '#EE0629',
-          status: -1
-        },
-        {
-          name: 'soundcloud',
-          displayName: 'SoundCloud',
-          logo: soundCloudIcon,
-          color: '#DB3034',
-          status: -1
-        },
-        {
-          name: 'bandcamp',
-          displayName: 'Bandcamp',
-          logo: bandcampIcon,
-          color: '#508E9D',
-          status: -1
+          name: 'mastodon',
+          displayName: 'Mastodon',
+          path: 'AuthMastodon',
+          logo: mastodonIcon,
+          color: '#4888CE',
+          status: 0
         }
       ]
     }
