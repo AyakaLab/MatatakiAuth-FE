@@ -92,9 +92,6 @@ export default {
       clearCookie('matataki_network')
       this.logOut()
     }
-  },
-  mounted () {
-    console.log(this.isLoggedIn)
   }
 }
 </script>

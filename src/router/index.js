@@ -35,6 +35,21 @@ const routes = [
     path: '/bilibili/auth/success',
     name: 'AuthBilibiliSuccess',
     component: () => import(/* webpackChunkName: "bilibiliauthsuccess" */ '../views/Bilibili/QRLoggedIn.vue')
+  },
+  {
+    path: '/auth/mastodon',
+    name: 'AuthMastodon',
+    component: () => import(/* webpackChunkName: "bilibiliauth" */ '../views/Auth/Mastodon.vue')
+  },
+  {
+    path: '/mastodon/auth/oauth',
+    name: 'MastodonOAuth',
+    component: () => import(/* webpackChunkName: "bilibiliqrauth" */ '../views/Mastodon/OAuth.vue')
+  },
+  {
+    path: '/mastodon/auth/success',
+    name: 'AuthMastodonSuccess',
+    component: () => import(/* webpackChunkName: "bilibiliauthsuccess" */ '../views/Mastodon/OAuthLoggedIn.vue')
   }
 ]
 

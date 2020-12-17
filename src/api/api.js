@@ -1,8 +1,10 @@
-const Bilibili = require('./bilibili/index')
+const Bilibili = require('./bilibili/index').default
+const Mastodon = require('./mastodon/index').default
 const Matataki = require('./matataki')
 
 const API = {
-  Bilibili: Bilibili.default,
+  Bilibili: Bilibili,
+  Mastodon: Mastodon,
   Matataki: Matataki
 }
 
