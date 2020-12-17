@@ -177,6 +177,7 @@ export default {
     Limiter.create('tootcheck', 10000)
     this.randomStr = this.getRandomString()
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
+    console.log(this.network)
   },
   destroyed () {
     clearInterval(this.intervalId)

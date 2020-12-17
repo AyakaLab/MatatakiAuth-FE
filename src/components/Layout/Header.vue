@@ -9,8 +9,11 @@
     </router-link>
     <div style="flex: 1;"> </div>
     <el-tooltip class="item" effect="dark" content="如果与你选择的网络不正确，请试试刷新网页" placement="bottom">
-      <div class="network-indicator">
-        <span>{{ getNetwork() }}</span>
+      <div v-if="networkError" class="network-indicator network-error">
+        <span>{{ networkIndicator }}</span>
+      </div>
+      <div v-else class="network-indicator">
+        <span>{{ networkIndicator }}</span>
       </div>
     </el-tooltip>
     <el-dropdown
@@ -74,18 +77,28 @@ import logo from '@/assets/logo.png'
 import apps from '@/assets/apps.png'
 import defaultAvatar from '@/assets/default_avatar.png'
 import { mapActions, mapState } from 'vuex'
-import { clearCookie } from '../../utils/cookie'
+import { getCookie, clearCookie } from '../../utils/cookie'
 
 export default {
   data () {
     return {
       logo: logo,
       apps: apps,
-      defaultAvatar: defaultAvatar
+      defaultAvatar: defaultAvatar,
+      networkError: false,
+      networkIndicator: '未登录'
     }
   },
   computed: {
     ...mapState(['isLoggedIn', 'userAvatar', 'network'])
+  },
+  watch: {
+    isLoggedIn (val) {
+      this.getNetwork()
+    },
+    network (val) {
+      this.getNetwork()
+    }
   },
   methods: {
     ...mapActions(['logIn', 'logOut']),
@@ -98,14 +111,21 @@ export default {
       this.logOut()
     },
     getNetwork () {
-      if (this.network === 'test') {
-        return '测试网'
-      } else if (this.network === 'main') {
-        return '正式网'
+      const n = getCookie('matataki_network')
+      console.log('cookie:', n)
+      console.log('data:', this.network)
+      if (n === 'test' || this.network === 'test') {
+        this.networkIndicator = '测试网'
+      } else if (n === 'main' || this.network === 'main') {
+        this.networkIndicator = '正式网'
       } else {
-        return '正式网'
+        if (this.networkError && this.isLoggedIn) this.networkIndicator = '网络错误'
+        else this.networkIndicator = '未登录'
       }
     }
+  },
+  mounted () {
+    this.getNetwork()
   }
 }
 </script>
@@ -113,6 +133,10 @@ export default {
 <style lang="less" scoped>
 .header-container {
   display: flex;
+}
+
+.network-error {
+  background-color: #fa3b3b !important;
 }
 
 .network-indicator {

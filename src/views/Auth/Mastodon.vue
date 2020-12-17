@@ -8,11 +8,13 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapMutations } from 'vuex'
+import Cookies from 'js-cookie'
+
 import Layout from '@/components/Layout.vue'
 import AuthMethodCard from '@/components/AuthMethodCard.vue'
-import { mapState, mapActions, mapMutations } from 'vuex'
 
-import { setCookie, getCookie, clearCookie, disassemble } from '../../utils/cookie'
+import { getCookie, disassemble } from '../../utils/cookie'
 
 export default {
   components: {
@@ -32,14 +34,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isLoggedIn'])
+    ...mapState(['isLoggedIn', 'network'])
   },
   watch: {
     isLoggedIn (val) {
       if (!val) this.$router.push({ name: 'Home' })
     },
     async $route (val) {
-      if (val.query.token) {
+      if (val.query.token && val.query.network) {
         this.cookieControl(val.query)
       }
     }
@@ -48,21 +50,23 @@ export default {
     ...mapActions(['logIn', 'logOut']),
     ...mapMutations(['setNetwork']),
     async cookieControl (query) {
-      this.setNetwork(query.network)
       const n = getCookie('matataki_network')
       if (n) {
-        clearCookie('matataki_network')
+        Cookies.remove('matataki_network')
         this.logOut()
       }
-      setCookie('matataki_network', query.network)
+      Cookies.set('matataki_network', query.network)
+
       const c = getCookie('matataki_token')
       if (c) {
-        clearCookie('matataki_token')
+        Cookies.remove('matataki_token')
         this.logOut()
       }
-      setCookie('matataki_token', query.token)
+      Cookies.set('matataki_token', query.token)
+
       const res = disassemble(query.token)
       await this.logIn(res)
+      this.setNetwork(query.network)
     }
   },
   async mounted () {
