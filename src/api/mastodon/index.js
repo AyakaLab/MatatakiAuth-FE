@@ -1,8 +1,8 @@
 import Axios from 'axios'
 
 const MATATAKI_AUTH_API = 'https://auth.matataki.io/api'
-// const MATATAKI_AUTH_API_TEST = 'https://auth.matataki.io/apitest'
-const MATATAKI_AUTH_API_TEST = 'http://127.0.0.1:8083'
+const MATATAKI_AUTH_API_TEST = 'https://auth.matataki.io/apitest'
+// const MATATAKI_AUTH_API_TEST = 'http://127.0.0.1:8083'
 
 const instanceModel = {
   uri: '',
