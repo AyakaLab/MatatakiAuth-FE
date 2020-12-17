@@ -176,11 +176,6 @@ export default {
     Limiter.create('tootcheck', 10000)
     this.randomStr = this.getRandomString()
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
-    else {
-      setTimeout(() => {
-        window.close()
-      }, 3000)
-    }
   },
   destroyed () {
     clearInterval(this.intervalId)
