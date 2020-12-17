@@ -92,6 +92,7 @@ export default {
         const limit = Limiter.check('tootcheck')
         if (limit.code === 1) {
           this.$message.warning(`重复操作次数过多，请等待 ${Math.ceil(limit.time / 10 ** 3)} 秒再试`)
+          this.btnLoading = false
           return
         }
 
