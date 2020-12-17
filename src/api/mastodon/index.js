@@ -44,6 +44,45 @@ const Mastodon = {
   },
   async getOAuthTokenTest (token) {
     return (await Axios.get(MATATAKI_AUTH_API_TEST + '/mastodon/oauth/token', { headers: { Authorization: `Bearer ${token}` } })).data
+  },
+  async getUpdate (oauth, id, userId, domain, username) {
+    return (await Axios.get(
+      MATATAKI_AUTH_API + '/mastodon/oauth/update',
+      {
+        params: { id: id, userId: userId, domain: domain, username: username },
+        headers: { Authorization: `Bearer ${oauth}` }
+      })
+    ).data
+  },
+  async getUpdateTest (oauth, id, userId, username, domain) {
+    return (await Axios.get(
+      MATATAKI_AUTH_API_TEST + '/mastodon/oauth/update',
+      {
+        params: { id: id, userId: userId, domain: domain, username: username },
+        headers: { Authorization: `Bearer ${oauth}` }
+      })
+    ).data
+  },
+  async getStatus (url, id, str) {
+    let res
+    try {
+      res = await Axios.get(`${url}/api/v1/statuses/${id}`)
+    } catch {
+      return false
+    }
+
+    let content
+    try {
+      content = res.data.content.replace(/<\/?p>/g, '')
+    } catch {
+      return false
+    }
+
+    if (content.includes(str)) {
+      return res.data
+    } else {
+      return false
+    }
   }
 }
 
