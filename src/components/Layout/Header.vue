@@ -8,6 +8,11 @@
       <img :src="logo" class="logo"/>
     </router-link>
     <div style="flex: 1;"> </div>
+    <el-tooltip class="item" effect="dark" content="如果与你选择的网络不正确，请试试刷新网页" placement="bottom">
+      <div class="network-indicator">
+        <span>{{ getNetwork() }}</span>
+      </div>
+    </el-tooltip>
     <el-dropdown
       placement="bottom-start"
       v-if="isLoggedIn"
@@ -16,7 +21,7 @@
       <div class="user-avatar">
         <img
           v-if="userAvatar"
-          :src="userAvatar"
+          :src="userAvatar || defaultAvatar"
           alt="user avatar"
           class="avatar"
         >
@@ -80,7 +85,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isLoggedIn', 'userAvatar'])
+    ...mapState(['isLoggedIn', 'userAvatar', 'network'])
   },
   methods: {
     ...mapActions(['logIn', 'logOut']),
@@ -91,6 +96,15 @@ export default {
       clearCookie('matataki_token')
       clearCookie('matataki_network')
       this.logOut()
+    },
+    getNetwork () {
+      if (this.network === 'test') {
+        return '测试网'
+      } else if (this.network === 'main') {
+        return '正式网'
+      } else {
+        return '正式网'
+      }
     }
   }
 }
@@ -99,6 +113,22 @@ export default {
 <style lang="less" scoped>
 .header-container {
   display: flex;
+}
+
+.network-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 90px;
+  top: 22px;
+  background-color: #4D39D7;
+  border-radius: 4px;
+  padding: 5px 8px;
+  span {
+    font-size: 14px;
+    color: white;
+  }
 }
 
 .logo {
