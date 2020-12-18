@@ -92,6 +92,7 @@ export default {
         const limit = Limiter.check('tootcheck')
         if (limit.code === 1) {
           this.$message.warning(`重复操作次数过多，请等待 ${Math.ceil(limit.time / 10 ** 3)} 秒再试`)
+          this.btnLoading = false
           return
         }
 
@@ -176,11 +177,7 @@ export default {
     Limiter.create('tootcheck', 10000)
     this.randomStr = this.getRandomString()
     if (!this.isLoggedIn) this.$router.push({ name: 'Home' })
-    else {
-      setTimeout(() => {
-        window.close()
-      }, 3000)
-    }
+    console.log(this.network)
   },
   destroyed () {
     clearInterval(this.intervalId)
