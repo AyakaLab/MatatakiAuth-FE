@@ -48,7 +48,6 @@ export default {
     ...mapActions(['logIn', 'logOut']),
     ...mapMutations(['setNetwork']),
     async cookieControl (query) {
-      this.setNetwork(query.network)
       const n = getCookie('matataki_network')
       if (n) {
         clearCookie('matataki_network')
@@ -63,6 +62,7 @@ export default {
       setCookie('matataki_token', query.token)
       const res = disassemble(query.token)
       await this.logIn(res)
+      this.setNetwork(query.network)
     }
   },
   async mounted () {

@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { setCookie, getCookie, clearCookie, disassemble } from '../utils/cookie'
 
 export default {
@@ -30,7 +30,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['logIn', 'logOut'])
+    ...mapActions(['logIn', 'logOut']),
+    ...mapMutations(['setNetwork'])
   },
   async mounted () {
     if (this.$route.query.token) {

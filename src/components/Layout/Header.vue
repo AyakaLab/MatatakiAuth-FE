@@ -8,6 +8,14 @@
       <img :src="logo" class="logo"/>
     </router-link>
     <div style="flex: 1;"> </div>
+    <el-tooltip class="item" effect="dark" content="如果与你选择的网络不正确，请试试刷新网页" placement="bottom">
+      <div v-if="networkError" class="network-indicator network-error">
+        <span>{{ networkIndicator }}</span>
+      </div>
+      <div v-else class="network-indicator">
+        <span>{{ networkIndicator }}</span>
+      </div>
+    </el-tooltip>
     <el-dropdown
       placement="bottom-start"
       v-if="isLoggedIn"
@@ -16,7 +24,7 @@
       <div class="user-avatar">
         <img
           v-if="userAvatar"
-          :src="userAvatar"
+          :src="userAvatar || defaultAvatar"
           alt="user avatar"
           class="avatar"
         >
@@ -69,18 +77,28 @@ import logo from '@/assets/logo.png'
 import apps from '@/assets/apps.png'
 import defaultAvatar from '@/assets/default_avatar.png'
 import { mapActions, mapState } from 'vuex'
-import { clearCookie } from '../../utils/cookie'
+import { getCookie, clearCookie } from '../../utils/cookie'
 
 export default {
   data () {
     return {
       logo: logo,
       apps: apps,
-      defaultAvatar: defaultAvatar
+      defaultAvatar: defaultAvatar,
+      networkError: false,
+      networkIndicator: '未登录'
     }
   },
   computed: {
-    ...mapState(['isLoggedIn', 'userAvatar'])
+    ...mapState(['isLoggedIn', 'userAvatar', 'network'])
+  },
+  watch: {
+    isLoggedIn (val) {
+      this.getNetwork()
+    },
+    network (val) {
+      this.getNetwork()
+    }
   },
   methods: {
     ...mapActions(['logIn', 'logOut']),
@@ -91,7 +109,23 @@ export default {
       clearCookie('matataki_token')
       clearCookie('matataki_network')
       this.logOut()
+    },
+    getNetwork () {
+      const n = getCookie('matataki_network')
+      console.log('cookie:', n)
+      console.log('data:', this.network)
+      if (n === 'test' || this.network === 'test') {
+        this.networkIndicator = '测试网'
+      } else if (n === 'main' || this.network === 'main') {
+        this.networkIndicator = '正式网'
+      } else {
+        if (this.networkError && this.isLoggedIn) this.networkIndicator = '网络错误'
+        else this.networkIndicator = '未登录'
+      }
     }
+  },
+  mounted () {
+    this.getNetwork()
   }
 }
 </script>
@@ -99,6 +133,26 @@ export default {
 <style lang="less" scoped>
 .header-container {
   display: flex;
+}
+
+.network-error {
+  background-color: #fa3b3b !important;
+}
+
+.network-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 90px;
+  top: 22px;
+  background-color: #4D39D7;
+  border-radius: 4px;
+  padding: 5px 8px;
+  span {
+    font-size: 14px;
+    color: white;
+  }
 }
 
 .logo {
