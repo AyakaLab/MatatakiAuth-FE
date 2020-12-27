@@ -46,6 +46,11 @@ const Mastodon = {
     return (await Axios.get(MATATAKI_AUTH_API_TEST + '/mastodon/oauth/token', { headers: { Authorization: `Bearer ${token}` } })).data
   },
   async getUpdate (oauth, id, userId, domain, username) {
+    console.log('oauth', oauth)
+    console.log('id', id)
+    console.log('userId', userId)
+    console.log('domain', domain)
+    console.log('username', username)
     return (await Axios.get(
       MATATAKI_AUTH_API + '/mastodon/oauth/update',
       {

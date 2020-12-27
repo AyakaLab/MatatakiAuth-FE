@@ -102,6 +102,7 @@ export default {
           if (result) {
             let updateRes
             if (this.network === 'test') {
+              console.log('this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain', this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
               updateRes = await API.Mastodon.getUpdateTest(this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
             } else {
               updateRes = await API.Mastodon.getUpdate(this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
