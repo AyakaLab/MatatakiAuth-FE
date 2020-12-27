@@ -79,7 +79,7 @@ export default {
       const protocol = inputText.match(/^https?:\/\//)
       const statusId = inputText.replace(/https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\/(@([a-zA-Z0-9])*)\//, '')
 
-      const token = await this.getToken()
+      await this.getToken()
       if (!domain) {
         this.$message.error('输入的实例地址无效')
       } else {
@@ -101,10 +101,19 @@ export default {
           if (result) {
             let updateRes
             if (this.network === 'test') {
-              updateRes = await API.Mastodon.getUpdateTest({ oauth: token, userId: this.userId, id: result.account.id, username: result.account.username, domain: protocol[0] + this.domain })
+              try {
+                updateRes = await API.Mastodon.getUpdateTest({ oauth: this.oauthToken, userId: this.userId, id: result.account.id, username: result.account.username, domain: protocol[0] + this.domain })
+              } catch (e) {
+                this.$message.error('更新数据失败，如果多次出现该错误请联系管理员')
+                this.btnLoading = false
+              }
             } else {
-              debugger
-              updateRes = await API.Mastodon.getUpdate({ oauth: token, userId: this.userId, id: result.account.id, username: result.account.username, domain: protocol[0] + this.domain })
+              try {
+                updateRes = await API.Mastodon.getUpdate({ oauth: this.oauthToken, userId: this.userId, id: result.account.id, username: result.account.username, domain: protocol[0] + this.domain })
+              } catch (e) {
+                this.$message.error('更新数据失败，如果多次出现该错误请联系管理员')
+                this.btnLoading = false
+              }
             }
 
             if (updateRes.code === 0) {

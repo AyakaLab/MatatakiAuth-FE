@@ -45,23 +45,33 @@ const Mastodon = {
   async getOAuthTokenTest (token) {
     return (await Axios.get(MATATAKI_AUTH_API_TEST + '/mastodon/oauth/token', { headers: { Authorization: `Bearer ${token}` } })).data
   },
-  async getUpdate (data) {
-    return (await Axios.get(
-      MATATAKI_AUTH_API + '/mastodon/oauth/update',
-      {
-        params: { id: data.id, userId: data.userId, domain: data.domain, username: data.username },
-        headers: { Authorization: `Bearer ${data.oauth}` }
+  getUpdate (data) {
+    return new Promise((resolve, reject) => {
+      Axios.get(
+        MATATAKI_AUTH_API + '/mastodon/oauth/update',
+        {
+          params: { id: data.id, userId: data.userId, domain: data.domain, username: data.username },
+          headers: { Authorization: `Bearer ${data.oauth}` }
+        }).then(res => {
+        resolve(res.data)
+      }).catch(err => {
+        reject(err)
       })
-    ).data
+    })
   },
-  async getUpdateTest (data) {
-    return (await Axios.get(
-      MATATAKI_AUTH_API_TEST + '/mastodon/oauth/update',
-      {
-        params: { id: data.id, userId: data.userId, domain: data.domain, username: data.username },
-        headers: { Authorization: `Bearer ${data.oauth}` }
+  getUpdateTest (data) {
+    return new Promise((resolve, reject) => {
+      Axios.get(
+        MATATAKI_AUTH_API_TEST + '/mastodon/oauth/update',
+        {
+          params: { id: data.id, userId: data.userId, domain: data.domain, username: data.username },
+          headers: { Authorization: `Bearer ${data.oauth}` }
+        }).then(res => {
+        resolve(res.data)
+      }).catch(err => {
+        reject(err)
       })
-    ).data
+    })
   },
   async getStatus (url, id, str) {
     let res
