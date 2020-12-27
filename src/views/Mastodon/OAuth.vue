@@ -79,8 +79,7 @@ export default {
       const protocol = inputText.match(/^https?:\/\//)
       const statusId = inputText.replace(/https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\/(@([a-zA-Z0-9])*)\//, '')
 
-      await this.getToken()
-      console.log()
+      const token = await this.getToken()
       if (!domain) {
         this.$message.error('输入的实例地址无效')
       } else {
@@ -102,10 +101,10 @@ export default {
           if (result) {
             let updateRes
             if (this.network === 'test') {
-              console.log('this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain', this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
-              updateRes = await API.Mastodon.getUpdateTest(this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
+              updateRes = await API.Mastodon.getUpdateTest({ oauth: token, userId: this.userId, id: result.account.id, username: result.account.username, domain: protocol[0] + this.domain })
             } else {
-              updateRes = await API.Mastodon.getUpdate(this.oauthToken, this.userId, result.account.id, result.account.username, protocol[0] + this.domain)
+              debugger
+              updateRes = await API.Mastodon.getUpdate({ oauth: token, userId: this.userId, id: result.account.id, username: result.account.username, domain: protocol[0] + this.domain })
             }
 
             if (updateRes.code === 0) {
@@ -140,6 +139,7 @@ export default {
         res = await API.Mastodon.getOAuthToken(c)
       }
       this.oauthToken = res.token
+      return res.token
     },
     copyToClipboard (text) {
       if (window.clipboardData && window.clipboardData.setData) {
