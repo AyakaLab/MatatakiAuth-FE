@@ -40,4 +40,4 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        script: cd Git/MatatakiAuth-FE && git pull && yarn && yarn test && yarn build
+        script: cd /mnt/vdb/services/Git/MatatakiAuth-FE && git pull && yarn && yarn test && yarn build
